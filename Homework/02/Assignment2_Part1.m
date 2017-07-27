@@ -2,6 +2,7 @@ clear vars;
 close all;
 
 
+
 filename = 'diabetes.csv';
 datafile = 'input1.mat';
 
@@ -22,7 +23,10 @@ end
 std = standardize(data(:,2:end));
 newData = [data(:,1), std];
 
-otherData = kmeme(newData,2,2,3);
+%otherData = kmeme(newData,2,7,6);
+
+otherData = kmeme(newData(:,8:-1:7), 2, 1, 2);
+%otherData = kmeme(newData, 5, 2, 3);
 
 function [X] = kmeme(X, k, xcol, ycol)
     s = RandStream('mt19937ar','Seed',0);
@@ -30,23 +34,24 @@ function [X] = kmeme(X, k, xcol, ycol)
     X = X(randperm(s, size(X,1)), :);
     oldX = X;
     
-    X = X(:, 2:end);
-    d1 = X(:, xcol);
-    d2 = X(:, ycol);
-    
+    %X = X(:, 2:end);
     kVals = X(1:k, :);
     
-    %plot(d1,d2,'rx');
+    
+    d1 = X(:, xcol);
+    d2 = X(:, ycol);
+ 
+    %plot(d1, d2, 'rx');
     %hold on;
     %plot(kVals(:,xcol),kVals(:,ycol), 'bo');
+    
     
     maxY = size(X,2);
     
     X = [X, zeros(size(X,1),1)];
    
-    disp(kVals);
     % loop until we hit episilon
-    for k = 1:9999
+    for j = 1:9999
         % loop over entire data
         for c = 1:size(X,1)
             working = X(c, 1:end-1);
@@ -59,30 +64,35 @@ function [X] = kmeme(X, k, xcol, ycol)
             [M, I] = min(distances);
             X(c, end) = I;
         end
+        oKV = kVals;
         last = size(X,2);
         for i = 1:size(kVals,1)
             allData = (X(X(:,last)==i,1:end-1));
-            disp(i);
             kVals(i,:) = mean(allData);
         end
         
-        if k==2 
+        diff = pdist2(kVals, oKV, 'cityblock');
+        if diff(1) < eps
+            disp(j);
             break
         end
     end
-    
-    d1x = X(X(:,end)==1, xcol);
-    d1y = X(X(:,end)==1, ycol);
-    
-    d2x = X(X(:,end)==2, xcol);
-    d2y = X(X(:,end)==2, ycol);
-    
-    plot(d1x,d1y,'rx');
-    hold on;
-    plot(d2x,d2y,'bo');
-    hold on;
-    plot(kVals(:,xcol),kVals(:,ycol), 'bo');
+    myPlot(X, kVals, k, xcol, ycol); 
 end
+
+function [] = myPlot(X, kMeans, k, xcol, ycol)    
+    colors = ['g';'r';'c';'r';'g';'b';'k'];
+    for c = 1:k
+        dx = X(X(:,end)==c, xcol);
+        dy = X(X(:,end)==c, ycol);
+        disp(size(dx));
+        plot(dx, dy, strcat(colors(c),'x'));
+        hold on;
+        plot(kMeans(c,xcol), kMeans(c,ycol), strcat(colors(c),'o'), 'MarkerSize',10,'MarkerEdgeColor','k', 'MarkerFaceColor', colors(c));
+        hold on;
+    end
+end
+
 
 % Standardizes the data input
 function [newData] = standardize(data)
