@@ -23,10 +23,19 @@ end
 std = standardize(data(:,2:end));
 newData = [data(:,1), std];
 
-%otherData = kmeme(newData,2,7,6);
+%otherData = kmeme(newData,2,8,7);
 
-otherData = kmeme(newData(:,8:-1:7), 2, 1, 2);
+%
+%% Part one
+%
+%otherData = kmeme(newData(:,8:-1:7), 2, 1, 2);
+%%
+
 %otherData = kmeme(newData, 5, 2, 3);
+%otherData = kmeme(newData, 4, 4, 3);
+%otherData = kmeme(newData, 5, 2, 3);
+
+otherData = kmeme(newData, 7, 6, 8);
 
 function [X] = kmeme(X, k, xcol, ycol)
     s = RandStream('mt19937ar','Seed',0);
@@ -41,10 +50,14 @@ function [X] = kmeme(X, k, xcol, ycol)
     d1 = X(:, xcol);
     d2 = X(:, ycol);
  
+    %%
+    % Code to get the initial setup visualizaiton.
+    %%
     %plot(d1, d2, 'rx');
     %hold on;
     %plot(kVals(:,xcol),kVals(:,ycol), 'bo');
-    
+    %title('Initial Seeds');
+    %%
     
     maxY = size(X,2);
     
@@ -76,12 +89,22 @@ function [X] = kmeme(X, k, xcol, ycol)
             disp(j);
             break
         end
+        %%
+        % Code to display first clustering
+        %%
+        %if j == 1
+        %    myPlot(X,kVals,k,xcol,ycol,j);
+        %end
+        %%
     end
-    myPlot(X, kVals, k, xcol, ycol); 
+    %%
+    % Code to display last stage of visualization. 
+    %%
+    myPlot(X, kVals, k, xcol, ycol, j); 
 end
 
-function [] = myPlot(X, kMeans, k, xcol, ycol)    
-    colors = ['g';'r';'c';'r';'g';'b';'k'];
+function [] = myPlot(X, kMeans, k, xcol, ycol, j)    
+    colors = ['y';'m';'c';'r';'g';'b';'k'];
     for c = 1:k
         dx = X(X(:,end)==c, xcol);
         dy = X(X(:,end)==c, ycol);
@@ -91,6 +114,7 @@ function [] = myPlot(X, kMeans, k, xcol, ycol)
         plot(kMeans(c,xcol), kMeans(c,ycol), strcat(colors(c),'o'), 'MarkerSize',10,'MarkerEdgeColor','k', 'MarkerFaceColor', colors(c));
         hold on;
     end
+    title(strcat('Iteration ', num2str(j)));
 end
 
 

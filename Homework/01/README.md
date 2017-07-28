@@ -5,7 +5,6 @@
 ### Assignment1_Part1.m
 
 - Ensure the file diabetes.csv is in the same directory you're running this from.
-
 - Run in matlab.
 
 ### Assignment1_Part2.m
