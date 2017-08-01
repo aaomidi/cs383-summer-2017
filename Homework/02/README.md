@@ -39,3 +39,8 @@ And finally, if you want to show the final the final clustering:
 ```
 
 At the end of the loop (around line 103)!
+
+
+### Video 
+
+Visit the following link to see the code in action: https://youtu.be/qTmDo1e20mk
