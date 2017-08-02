@@ -17,16 +17,25 @@ else
     save(datafile);
 end
 
-stdData = standardize(data);
+stdData = data;
+
+% Randomize the rows.
+s = RandStream('mt19937ar', 'Seed', 0);
+stdData = stdData(randperm(s, size(stdData, 1)), :);
+
+stdData = standardize(stdData(:, 2:end));
 
 newData = [stdData(:, 1:end-1), data(:,end)];
+
+
+pick = ceil(size(newData, 1) * 2 / 3);
 
 X1 = ones(size(newData,1),1);
 
 newData = [X1, newData];
 
-X = newData(:,1:end-1);
-Y = newData(:, end);
+X = newData(1:pick, 1:end-1);
+Y = newData(1:pick, end);
 
 theta = inv((X.'*X)) * X.'*Y;
 disp(theta);

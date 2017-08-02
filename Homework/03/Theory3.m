@@ -15,7 +15,6 @@ X = [X1, X];
 
 Y = newData(:,2);
 
-disp(inv(X.'*X) * X.' * Y);
 theta = inv((X.'*X)) * X.'*Y;
 
 disp(theta);
