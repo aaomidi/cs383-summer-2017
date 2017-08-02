@@ -1,26 +1,36 @@
 clear vars;
 close all;
 
-data = [-2, 1; -5, -4; -3, 1; 0,3;-8,11;-2,5;1,0;5,-1;-1,-3;6,1];
+filename = 'x06Simple.csv';
+datafile = 'input1.mat';
 
-newData = standardize(data);
+if(exist(datafile, 'file'))
+    load(datafile);
+else
+    fid = fopen(filename);
+    if(fid<0)
+        disp('File not found')
+        return
+    end
+    
+    data = csvread(filename, 1);
+    save(datafile);
+end
 
-newData = [newData(:,1), data(:,2)];
+stdData = standardize(data);
 
-X = newData(:,1);
+newData = [stdData(:, 1:end-1), data(:,end)];
 
-X1 = ones(size(X,1),1);
+X1 = ones(size(newData,1),1);
 
-X = [X1, X];
+newData = [X1, newData];
 
-Y = newData(:,2);
+X = newData(:,1:end-1);
+Y = newData(:, end);
 
-disp(inv(X.'*X) * X.' * Y);
 theta = inv((X.'*X)) * X.'*Y;
-
 disp(theta);
 
-plot(newData(:,1), newData(:,2),'ro');
 
 % Standardizes the data input
 function [newData] = standardize(data)

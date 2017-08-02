@@ -1,0 +1,191 @@
+\title{CS 383 - Machine Learning}
+\author{
+Assignment 2 - Clustering\\
+Summer 2017\\
+Amir Omidi
+}
+\date{}
+\documentclass[12pt]{article}
+    \usepackage[margin=0.7in]{geometry}
+    \usepackage{graphicx}
+    \usepackage{float}
+    \usepackage{amsmath}
+    
+    
+\begin{document}
+\maketitle
+
+\newpage
+\section{Theory}
+\noindent
+The matrix we're dealing with in this question is the following:
+
+\begin{center}
+    $\begin{bmatrix}
+        -2 & 1\\
+        -5 & -4\\
+        -3 & 1\\
+        0 & 3\\
+        -8 & 11\\
+        -2 & 5\\
+        1 & 0\\
+        5 & -1\\
+        -1 & -3\\
+        6 & 1\\
+    \end{bmatrix}$
+\end{center}
+
+\subsection{Standarization}
+
+\noindent
+This is the same matrix as our first assignment, so with reference to that assignment, we know the first row standardized is:
+
+\begin{center}
+    $\begin{bmatrix}
+        -0.2602 & 1\\
+        -0.9697 & -4\\
+        -0.4967 & 1\\
+        0.2129 & 3\\
+        -1.6792 & 11\\
+        -0.2602 & 5\\
+        0.4494 & 0\\
+        1.3954 & -1\\
+        -0.0237 & -3\\
+        1.6319 & 1\\
+    \end{bmatrix}$
+\end{center}
+
+\subsection{Feature Addition}
+\noindent
+Let's add our additional feature of a $1 \times 10$ matrix:
+
+\begin{center}
+    $\begin{bmatrix}
+        1 & -0.2602 & 1\\
+        1 & -0.9697 & -4\\
+        1 & -0.4967 & 1\\
+        1 & 0.2129 & 3\\
+        1 & -1.6792 & 11\\
+        1 & -0.2602 & 5\\
+        1 & 0.4494 & 0\\
+        1 & 1.3954 & -1\\
+        1 & -0.0237 & -3\\
+        1 & 1.6319 & 1\\
+    \end{bmatrix}$
+\end{center}
+
+\newpage
+\subsection{Weight Calculation}
+\noindent
+Let's compute the weight! We know the formula for this is:
+\begin{center}
+    $ \theta = \left(X^{T} X\right)^{-1}X^{T}Y $
+\end{center}
+
+\noindent
+Plugging in the values, we get:
+
+\begin{center}
+    \begin{align*}
+        \left(X^{T} X\right) &=
+        \begin{bmatrix}
+            1.0000  &  1.0000 &   1.0000   & 1.0000  &  1.0000    1.0000  &  1.0000 &   1.0000   & 1.0000  &  1.0000 \\
+            -0.2602 &   -0.9697  & -0.4967 &   0.2129 &  -1.6792   -0.2602  &  0.4494 &   1.3954  & -0.0237 &   1.6319 \\
+        \end{bmatrix}
+        \\
+        & \times
+        \begin{bmatrix}
+            1 & -0.2602 \\
+            1 & -0.9697 \\
+            1 & -0.4967 \\
+            1 & 0.2129 \\
+            1 & -1.6792 \\
+            1 & -0.2602 \\
+            1 & 0.4494 \\
+            1 & 1.3954 \\
+            1 & -0.0237 \\
+            1 & 1.6319 \\
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            10.0000  &  0.0000\\
+            0.0000 &   9.0000\\
+        \end{bmatrix}
+        \\[0.1 in]
+        det(\left(X^{T} X\right)) &= 90
+        \\[0.1 in]
+        \left(X^{T} X\right)^{-1} &= \frac{1}{90} 
+        \times
+        \begin{bmatrix}
+            10.0000  &  0.0000\\
+            0.0000 &   9.0000\\
+        \end{bmatrix}
+        \\ &= 
+        \begin{bmatrix}
+            0.1000 &  0.0000\\
+            0.0000  &  0.1111\\
+        \end{bmatrix}
+        \\[0.1 in]
+        \theta &=
+        \begin{bmatrix}
+            0.1000 &  0.0000\\
+            0.0000  &  0.1111\\
+        \end{bmatrix} 
+        \\
+        &\times
+        \begin{bmatrix}
+            1.0000  &  1.0000 &   1.0000   & 1.0000  &  1.0000    1.0000  &  1.0000 &   1.0000   & 1.0000  &  1.0000 \\
+            -0.2602 &   -0.9697  & -0.4967 &   0.2129 &  -1.6792   -0.2602  &  0.4494 &   1.3954  & -0.0237 &   1.6319 \\
+        \end{bmatrix}
+        \\
+        &\times
+        \begin{bmatrix}
+            1\\
+            -4\\
+            1\\
+            3\\
+            11\\
+            5\\
+            0\\
+            -1\\
+            -3\\
+            1\\
+        \end{bmatrix}
+        = 
+        \begin{bmatrix}
+            1.4000 \\
+            - 1.7499 \\
+        \end{bmatrix}
+    \end{align*}
+\end{center}
+
+\noindent
+So with this we know:
+\begin{center}
+    $
+    \theta = 
+    \begin{bmatrix}
+    1.4000 & -1.7499 \\
+    \end{bmatrix}
+    ^{T}
+    $
+\end{center}
+
+\noindent
+Therefore our model is:
+
+\begin{center}
+    $
+    y = 1.4 + 1.75x_{1}
+    $
+\end{center}
+\newpage
+
+\section{Programming}
+\subsection{Closed Form Linear Regression}
+
+\newpage
+\subsection{S-Folds Cross-Validation}
+
+\end{document}
+
