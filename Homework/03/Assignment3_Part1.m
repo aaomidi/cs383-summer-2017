@@ -17,28 +17,31 @@ else
     save(datafile);
 end
 
-stdData = data;
+newData = data;
 
 % Randomize the rows.
 s = RandStream('mt19937ar', 'Seed', 0);
-stdData = stdData(randperm(s, size(stdData, 1)), :);
+newData = newData(randperm(s, size(newData, 1)), :);
 
-stdData = standardize(stdData(:, 2:end));
-
-newData = [stdData(:, 1:end-1), data(:,end)];
-
+newData = newData(:, 2:end);
 
 pick = ceil(size(newData, 1) * 2 / 3);
 
-X1 = ones(size(newData,1),1);
+stdData = standardize(newData(1:pick,:));
+X1 = ones(size(stdData, 1),1);
 
-newData = [X1, newData];
+stdData = [X1, stdData];
 
-X = newData(1:pick, 1:end-1);
-Y = newData(1:pick, end);
+trainX = stdData(:, 1:end-1);
+trainY = newData(1:pick, end);
 
-theta = inv((X.'*X)) * X.'*Y;
+theta = inv((trainX.' * trainX)) * trainX.' * trainY;
 disp(theta);
+
+pick = pick + 1;
+
+testX = newData(pick:end, 1:end-1);
+testY = newData(pick:end, end);
 
 
 % Standardizes the data input
