@@ -27,7 +27,8 @@ newData = newData(:, 2:end);
 
 pick = ceil(size(newData, 1) * 2 / 3);
 
-stdData = standardize(newData(1:pick,:));
+[stdData, means, stds] = standardize(newData(1:pick,:));
+
 X1 = ones(size(stdData, 1),1);
 
 stdData = [X1, stdData];
@@ -41,11 +42,38 @@ disp(theta);
 pick = pick + 1;
 
 testX = newData(pick:end, 1:end-1);
-testY = newData(pick:end, end);
+actualY = newData(pick:end, end);
 
+predictedY = zeros(size(actualY,1), 1);
+
+
+
+% Standardize testX
+means = means(1, 1:end-1);
+stds = stds(1,1:end-1);
+
+meanArray = repmat(means, size(testX,1), 1);
+stdArray = repmat(stds, size(testX,1), 1);
+
+testX = testX - meanArray;
+testX = testX ./ stdArray;
+%
+
+
+
+MSE = 0;
+
+for c = 1:size(testX,1)
+   predictedY(c) = theta(1,1) + (theta(2,1) * testX(c,1)) + (theta(3,1) * testX(c,2));
+   MSE = MSE + (actualY(c) - predictedY(c)) ^ 2;
+end
+
+RMSE = sqrt(MSE * (1/length(predictedY)));
+
+disp(RMSE);
 
 % Standardizes the data input
-function [newData] = standardize(data)
+function [newData, means, stds] = standardize(data)
     s = size(data,2);
     means = zeros(1,s);
     stds = zeros(1,s);
