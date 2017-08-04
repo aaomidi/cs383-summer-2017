@@ -32,7 +32,7 @@ newData = [offset, newData];
 disp(sFolds(newData, 5));
 
 function [RMSE] = sFolds(data, S)
-    RMSE = 0
+    RMSE = 0;
     lenX = length(data);
     
     pick = ceil(length(data) / S);
@@ -40,49 +40,48 @@ function [RMSE] = sFolds(data, S)
    
     for i = 1:S        
         endX = i * pick;
+        startX = endX - pick + 1;
+        
         if (endX > lenX)
             endX = lenX;
         end
-        startX = endX - pick + 1;
         
-        
-        currentFold = data(1:startX-1,:);
-        currentFold = [currentFold; data(endX+1:end,:)];
+        trainingData = data(1:startX-1,:);
+        trainingData = [trainingData; data(endX+1:end,:)];
        
-        otherFolds = data(startX:endX, :);   
+        testingData = data(startX:endX, :);  
         
         % remove the offset data
-        otherFolds = otherFolds(:, 2:end);
+        testingData = testingData(:, 2:end);
                
-        [stdData, means, stds] = standardize(currentFold(:, 2:end-1));
+        [stdData, means, stds] = standardize(trainingData(:, 2:end-1));
         
         % prepare standardization of testing data
-        meanArray = repmat(means, size(otherFolds,1), 1);
-        stdArray = repmat(stds, size(otherFolds,1), 1);
+        meanArray = repmat(means, size(testingData,1), 1);
+        stdArray = repmat(stds, size(testingData,1), 1);
        
-        stdData = [currentFold(:, 1), stdData];
-        stdData = [stdData, currentFold(:, end)];
+        stdData = [trainingData(:, 1), stdData];
+        stdData = [stdData, trainingData(:, end)];
         
-        otherFoldsStd = otherFolds(:, 1:end-1);
+        testingDataStd = testingData(:, 1:end-1);
         
         % standardize testing data
-        otherFoldsStd = otherFoldsStd - meanArray;
-        otherFoldsStd = otherFoldsStd ./ stdArray;
+        testingDataStd = testingDataStd - meanArray;
+        testingDataStd = testingDataStd ./ stdArray;
         
-        otherFolds = [otherFoldsStd, otherFolds(:, end)];
+        testingData = [testingDataStd, testingData(:, end)];
         
         X = stdData(:, 1:end-1);
         Y = stdData(:, end);
         theta = inv((X.' * X)) * X.' * Y;
 
-        
         MSE = 0;
-        for j = 1:length(otherFolds)
-            predictedY = theta(1,1) + (theta(2,1) * otherFolds(j,1)) + (theta(3,1) * otherFolds(j,2));
-            MSE = MSE + ((otherFolds(j,3) - predictedY) ^ 2);
+        for j = 1:length(testingData)
+            predictedY = theta(1,1) + (theta(2,1) * testingData(j,1)) + (theta(3,1) * testingData(j,2));
+            MSE = MSE + ((testingData(j,3) - predictedY) ^ 2);
         end
         
-        RMSE = RMSE + (MSE / length(otherFolds));
+        RMSE = RMSE + (MSE / length(testingData));
     end
     
     RMSE = sqrt(RMSE / S);
