@@ -1,0 +1,208 @@
+\title{CS 383 - Machine Learning}
+\author{
+Assignment 4 - Naive Bayes, Decision Trees and Nearest Neighbors\\
+Summer 2017\\
+Amir Omidi
+}
+\date{}
+\documentclass[12pt]{article}
+    \usepackage[margin=0.7in]{geometry}
+    \usepackage{graphicx}
+    \usepackage{float}
+    \usepackage{amsmath}
+    \usepackage{tikz,forest}
+    \usetikzlibrary{arrows.meta}
+    
+    \forestset{
+    .style={
+    for tree={
+    base=bottom,
+    child anchor=north,
+    align=center,
+    s sep+=5cm,
+    straight edge/.style={
+    edge path={\noexpand\path[\forestoption{edge},thick,-{Latex}] 
+    (!u.parent anchor) -- (.child anchor);}
+    },
+    if n children={0}
+    {tier=word, draw, thick, rectangle}
+    {draw, diamond, thick, aspect=2},
+    if n=1{%
+    edge path={\noexpand\path[\forestoption{edge},thick,-{Latex}] 
+    (!u.parent anchor) -| (.child anchor) node[pos=.2, above] {Y};}
+    }{
+    edge path={\noexpand\path[\forestoption{edge},thick,-{Latex}] 
+    (!u.parent anchor) -| (.child anchor) node[pos=.2, above] {N};}
+    }
+    }
+    }
+    }
+    
+    
+\begin{document}
+\maketitle
+
+\newpage
+\section{Theory}
+\subsection{Question 1}
+\subsubsection{Part A}
+
+\noindent
+As we recall from homework 1, entropy of a two feature data set is calculated with the following formula:
+\begin{center}
+    $
+    H(v_1, v_2) = -P(v_1)\log_{2}{P(v_1)} - P(v_2)\log_{2}{P(v_2)}
+    $
+\end{center}
+
+\noindent
+So for our data it would be:
+
+\begin{center}
+    \begin{align*}
+        H &= - \frac{12}{21} \times \log_{2}{\frac{12}{21}} - \frac{9}{21} \times \log_{2}{\frac{9}{21}} \\
+        H &= 0.98522
+    \end{align*}
+\end{center}
+
+\subsubsection{Part B}
+
+\noindent
+To calculate the information gain, we first specify the true and false count of each feature:
+\noindent
+\\[0.1 in]
+\textbf{Feature 1}
+\begin{center}
+    \begin{alignat*}{2}
+        P_{T} &= 7 \qquad &&N_{T} = 1 \\
+        P_{F} &= 5 \qquad &&N_{F} = 8
+    \end{alignat*}
+\end{center}
+
+\noindent
+\textbf{Feature 2}
+\begin{center}
+    \begin{alignat*}{2}
+        P_{T} &= 7 \qquad N_{T} &&= 3 \\
+        P_{F} &= 5 \qquad N_{F} &&= 6
+    \end{alignat*}
+\end{center}
+
+\noindent
+Now we can calculate the remainder of each feature:
+
+\iffalse
+(8/21 * ((-7/8) * log_2(7/8) + (-1/8)*log_2(1/8))) + (13/21 * ((-5/13) * log_2(5/13) + (-8/13) log_2(8/13)))
+\fi
+\begin{center}
+    \begin{align*}
+        Remainder(1) &= \left( \frac{8}{21} \times \left( \frac{-7}{8} \log_{2}{\frac{7}{8}} + \frac{-1}{8}\log_{2}{\frac{1}{8}} \right) \right) + \left( \frac{13}{21} \times \left( \frac{-5}{13} \log_{2}{\frac{5}{13}} + \frac{-8}{13}\log_{2}{\frac{8}{13}} \right) \right) \\ 
+        Remainder(1) &= 0.8021\\
+        Remainder(2) &= \left( \frac{10}{21} \times \left( \frac{-7}{10} \log_{2}{\frac{7}{10}} + \frac{-3}{10}\log_{2}{\frac{3}{10}} \right) \right) + \left( \frac{11}{21} \times \left( \frac{-5}{11} \log_{2}{\frac{5}{11}} + \frac{-6}{11}\log_{2}{\frac{6}{11}} \right) \right) \\
+        Remainder(2) &= 0.9403
+    \end{align*}
+\end{center}
+
+\noindent
+And finally, the information gain from each feature is:
+
+\begin{center}
+    \begin{alignat*}{2}
+        IG(1) &= 0.98522 - 0.8021 &&= 0.18312 \\
+        IG(2) &= 0.98522 - 0.9403 &&= 0.04492
+    \end{alignat*}
+\end{center}
+
+\subsubsection{Part C}
+\noindent
+The informationg gain from the first feature is larger than the second feature, therefor we will split on the first feature: 
+\begin{center}
+    \scalebox{2}{
+    \begin{forest} 
+        [$x_1$, tikz={\draw[{Latex}-, thick] (.north) --++ (0,1);}
+        [$x_2$, edge label={node[midway,left,font=\scriptsize]{T}}
+        [100\%+, edge label={node[midway,left,font=\scriptsize]{T}}]
+        [75\%+, edge label={node[midway,right,font=\scriptsize]{F}}] 
+        ]   
+        [$x_2$, edge label={node[midway,right,font=\scriptsize]{F}}
+        [57.14\%+, edge label={node[midway,left,font=\scriptsize]{T}}]
+        [83.3\%-, edge label={node[midway,right,font=\scriptsize]{F}}] 
+        ]   
+        ] 
+    \end{forest}
+    }
+\end{center}
+
+\newpage
+\subsection{Question 2}
+\subsubsection{Part A}
+
+\noindent
+The priors are:
+
+\begin{center}
+    \begin{align*}
+        P(A) &= \frac{3}{5}\\
+        P(\neg A) &= \frac{2}{5}
+    \end{align*}
+\end{center}
+
+\subsubsection{Part B}
+
+\noindent
+The first step in this question is to standardize our data. Since this standardization step has been done before (Homework 1). The steps taken to calculate the standard deviation and means won't be shown.
+
+\begin{center}
+    \begin{alignat*}{2}
+        \mu_{f_1} &= 208 \qquad &&\mu_{f_2} = 4.03 \\ 
+        \sigma_{f_1} &= 145.22 \qquad &&\sigma_{f_2} = 1.33
+    \end{alignat*}
+    $\begin{bmatrix}   
+        0.0551 &	1.2477 & Yes \\
+        -0.9572 &	0.5688 & Yes \\
+        0.6472 &	-1.2945 & No \\
+        -1.0192 &	-0.6533 & Yes \\
+        1.2740 &	0.1313 & No \\
+    \end{bmatrix}$
+\end{center}
+
+
+\noindent
+By standardizing the data, each feature has a mean value of zero and a standard deviation of 1.  
+We can now calculate the parameters of the Gaussians.
+\\[0.1 in]
+\noindent
+\textbf{Model: }
+\begin{center}
+    \begin{alignat*}{1}
+        P(x|\mu, \sigma) &= \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \\
+        P(chars|0,1) &= \frac{1}{2.51} e^{-\frac{(x)^2}{2}}\\
+        P(AWL|0,1) &= \frac{1}{2.51} e^{-\frac{(x)^2}{2}}
+    \end{alignat*}
+\end{center}
+
+\subsubsection{Part C}
+\noindent
+The number of characters is 242 with an average word length of 4.56. Let us standardize this data first:
+
+\begin{center}
+    \begin{align*}
+        Standardize(242, 208, 145.22) &= 0.2341\\
+        Standardize(4.56, 4.03, 1.33) &= 0.3985
+    \end{align*}
+\end{center}
+
+\noindent
+We can now calculate the probability of getting an A:
+\begin{center}
+    \begin{align*} 
+        P(A|x_1=0.2341, x_2=0.3985) &= \frac{P(0.2341|A) \times P(0.3985|A) \times P(A)}{P(0.2341|A) \times P(0.3985|A) + P(0.2341|\neg A) \times P(0.3985|\neg A) \times P(\neg A)} \\
+        P(A|x_1=0.2341, x_2=0.3985) &= 0.75
+    \end{align*}
+\end{center}
+
+\noindent
+We see the the probability is $ 75\% $. Therefor, the expected score is A.
+
+\end{document}
+
