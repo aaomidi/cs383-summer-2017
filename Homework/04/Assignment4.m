@@ -34,7 +34,19 @@ stdData = [stdData, trainData(:,end)];
 
 results = zeros(length(testData), 2);
 
-parfor (i = 1:size(testData, 1), 8)
+meanArray = repmat(means, size(testData, 1), 1);
+stdArray = repmat(stds, size(testData, 1), 1);
+oldTestData = testData;
+
+
+testData = testData(:, 1:end-1);
+
+testData = testData - meanArray;
+testData = testData ./ stdArray;
+
+testData = [testData, oldTestData(:, end)];
+
+for i = 1:size(testData, 1)
     X = testData(i,:);
     label = X(1, end);
     
@@ -42,8 +54,8 @@ parfor (i = 1:size(testData, 1), 8)
     X = X(:, 1:end-1);
     
     % Standardize
-    X = X - means;
-    X = X ./stds;
+    %X = X - means;
+    %X = X ./stds;
     
     % Memory efficient datastructure.
     distances = zeros(k, 2);
@@ -59,14 +71,13 @@ parfor (i = 1:size(testData, 1), 8)
         %disp(dist);
         distances=insertData(distances, [dist, trainLabel], k);
     end
-    probability = double(sum(distances(:,end)))/ k;
-    
-    rLabel = 0;
-    if(probability > (k/2)/100)
-        rLabel = 1;
+    rLabel = mode(distances(:,end));
+   
+    results(i,:) = [rLabel, label];
+    if (rem(i,10)==0)
+        div = (i/length(testData)) * 100;
+        fprintf("Completed data %d out of %d. %0.2f%% completed.\n", i, length(testData), div);
     end
-    
-   results(i,:) = [rLabel, label];
 end
 
     save(datafile)
