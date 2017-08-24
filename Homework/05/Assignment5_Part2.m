@@ -14,7 +14,7 @@ else
     
     data = csvread(filename,2);
 
-    %save(datafile)
+    save(datafile)
 end
 
 temp = data(:, 1:end-2);
@@ -60,19 +60,34 @@ results3 = predict(model3, testData(:, 1:end-1));
 
 finalResults = [results1, results2, results3, testData(:, end)];
 
+results = zeros(length(finalResults), 2);
 
-correct = 0;
 for i=1:length(finalResults)
     row = finalResults(i,:);
     prediction = mode(row(:, 1:end-1));
     
-    if(prediction == row(:,end))
-        correct = correct + 1;
-    end
+    results(i,:) = [prediction, row(:,end)];
 end
 
-accuracy = correct / length(finalResults);
+confusion = zeros(3,3);
+
+for i=1:length(results)
+    row = results(i,:);
+    
+    predicted = row(:,1);
+    actual = row(:, 2);
+    
+    confuse = confusion(predicted, actual);
+    confusion(predicted, actual) = confuse + 1;
+end
+
+len = length(results);
+
+accuracy = (confusion(1,1) + confusion(2,2) + confusion(3,3)) / len;
+
 fprintf('Accuracy: %0.2f%% \n', accuracy*100);
+fprintf('\t|C1\t\t|C2\t\t|C3\t\t\nC1\t|%0.2f%%\t|%0.2f%%\t|%0.2f%%\t\nC2\t|%0.2f%%\t|%0.2f%%\t|%0.2f%%\t\nC3\t|%0.2f%%\t|%0.2f%%\t|%0.2f%%\t\n', confusion(1,1)/len * 100, confusion(1,2)/len * 100, confusion(1,3)/len * 100, confusion(2,1)/len * 100, confusion(2,2)/len * 100, confusion(2,3)/len * 100, confusion(3,1)/len * 100, confusion(3,2)/len * 100, confusion(3,3)/len * 100);
+
 
 
 function [selector, data, label] = onOneOne(X, val)

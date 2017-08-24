@@ -1,0 +1,85 @@
+\title{CS 383 - Machine Learning}
+\author{
+Assignment 5 - Support Vector Machines\\
+Summer 2017\\
+Amir Omidi
+}
+\date{}
+\documentclass[12pt]{article}
+    \usepackage[margin=0.7in]{geometry}
+    \usepackage{graphicx}
+    \usepackage{float}
+    \usepackage{amsmath}
+    
+    
+\begin{document}
+\maketitle
+
+\newpage
+\section{Programming Questions}
+\subsection{Support Vector Machines}
+
+\noindent
+Table \ref{table:1} presents the required evaluation of suport vector machines.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Precision: & $91.48\%$ \\
+        Recall: & $91.33\%$ \\ 
+        F-Measure: & $91.40\%$ \\
+        Accuracy: & $93.41\%$  \\
+        \hline
+    \end{tabular}
+    \caption{Evaluation for SVM classifier}
+    \label{table:1}
+\end{table}
+
+\newpage
+\subsection{Multi-Class Support Vector Machines}
+\label{section:2}
+\noindent
+Table \ref{table:2} presents the required evaluation of multi-class suport vector machines.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Method & Accuracy \\
+        \hline
+        One-vs-One & $90.68\%$ \\
+        \hline
+    \end{tabular}
+    \caption{Multi-Class Evaulation}
+    \label{table:2}
+\end{table}
+
+\newpage
+\subsection{Confusion Matrix}
+
+\noindent
+Table \ref{table:3} shows the confusion matrix for section \ref{section:2}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{l|l|l|l|}
+        &\multicolumn{3}{c}{True Label}\\
+        &Class 1 & Class 2 & Class 3\\
+        \hline
+        Predicted Class 1 & $73.87\%$ & $3.11\%$ & $0.28\%$\\
+        Predicted Class 2 & $3.81\%$ & $9.04\%$ & $1.27\%$ \\
+        Predicted Class 3 & $0.28\%$ & $0.56\%$ & $7.77\%$ \\
+        \hline
+    \end{tabular}
+    \caption{Confusion Matrix.  Columns are true classes, Rows are predicted.}
+    \label{table:3}
+\end{table}
+
+\noindent
+As we can see in this table, Class1-Class1, Class2-Class2 and Class3-Class3 bindings added up are the accuracy measure we had in section \ref{section:2}.
+
+\noindent
+Another interesting thing that we can see is there is a lot of confusion between distinguishing between class 1 and class 2.
+
+\end{document}
