@@ -54,14 +54,18 @@ labels = unique(stdData(:, end));
 K = length(labels);
 
 
-Y = stdData(:, end);
 % Add bias features.
+Y = stdData(:, end);
+    % Remove last row
+stdData = stdData(:, 1:end-1);
 stdData = [stdData, ones(N,1)];
-X = stdData(:, 1:end-1);
+X = stdData;
 
 testY = testData(:,end);
+    % Remove last row
+testData = testData(:, 1:end-1);
 testData = [testData, ones(length(testData), 1)];
-testX = testData(:,1:end-1);
+testX = testData;
 
     
 BETA = rand(D, M);

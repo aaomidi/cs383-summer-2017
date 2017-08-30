@@ -55,14 +55,19 @@ labels = unique(stdData(:, end));
 K = length(labels) - 1;
 
 
-Y = stdData(:, end);
+
 % Add bias features.
+Y = stdData(:, end);
+    % Remove last row
+stdData = stdData(:, 1:end-1);
 stdData = [stdData, ones(N,1)];
-X = stdData(:, 1:end-1);
+X = stdData;
 
 testY = testData(:,end);
+    % Remove last row
+testData = testData(:, 1:end-1);
 testData = [testData, ones(length(testData), 1)];
-testX = testData(:,1:end-1);
+testX = testData;
 
     
 BETA = rand(D, M);
@@ -111,7 +116,9 @@ function [accuracy] = getAccuracy(O, Y)
         r1 = O(i, 1);
         r2 = Y(i, 1);
         
+        % Prediction
         if(r1 > 0.5)
+            % Actual
             if (r2 == 1)
                correct = correct + 1; 
             end
