@@ -101,33 +101,44 @@ for i = 1:ITERATIONS
     
     % Evaluate our stuff
 
-    TestH = testX * BETA;
-    TestH = 1 ./ (1 + exp(-1 .* TestH));
-        
-    TestO = TestH * THETA;
-    TestO = 1 ./ (1 + exp(-1 .* TestO));
-    
-    correct = 0;
-    for j = 1:length(TestO)
-        [val1, idx1] = max(TestO(j,:));
-        [val2, idx2] = max(testY(j,:)); 
-        
-        if (idx1 == idx2)
-            correct = correct + 1;
-        end
-    end
-    
-    RESULTS(i,1) = (correct/length(testY));
+
+    RESULTS(i,1) = getAccuracy(O, Y);
 end
 plot(RESULTS, '-k');
 
 ylabel('Training Accuracy');
 xlabel('Iteration');
 
+testH = testX * BETA;
+testH = 1 ./ (1 + exp(-1 .* testH));
+        
+testO = testH * THETA;
+testO = 1 ./ (1 + exp(-1 .* testO));
+   
+fprintf("Accuracy of testing data: %0.2f%%\n", getAccuracy(testO, testY)*100);
+
+function [accuracy] = getAccuracy(O, Y)
+    len = length(O);
+    correct = 0;
+    for i = 1:len
+        r1 = O(i, :);
+        r2 = Y(i, :);
+        
+        [~, idx1] = max(r1);
+        [~, idx2] = max(r2);
+
+        if(idx1 == idx2)
+            correct = correct + 1;
+        end        
+    end
+    accuracy = correct/len;
+end
+
 function [encoded] = encode(data, len)
     encoded = zeros(1, len);
     encoded(1, data) = 1;
 end
+
 
 % Standardizes the data input
 function [newData, means, stds] = standardize(data)
